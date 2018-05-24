@@ -56,7 +56,8 @@ public class MasterNode implements Master {
         // Import our matrix from file
         Scanner sc = null;
         try {
-            sc = new Scanner(new File("input_matrix_no_zeros.csv"));
+//            sc = new Scanner(new File("input_matrix_no_zeros.csv"));
+            sc = new Scanner(new File("input_matrix_no_zeros_final.csv"));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -74,8 +75,16 @@ public class MasterNode implements Master {
             return;
         }
 
-        final int rows = 765;
-        final int columns = 1964;
+        int rMax = 0, cMax = 0;
+        for (String[] element : elements) {
+            rMax = Integer.parseInt(element[0]) > rMax ? Integer.parseInt(element[0]) : rMax;
+            cMax = Integer.parseInt(element[1]) > cMax ? Integer.parseInt(element[1]) : cMax;
+        }
+
+        final int rows = rMax + 1;
+        final int columns = cMax + 1;
+
+        System.out.println("rows: " + rows + "\ncolumns: " + columns);
 
         final int rows_sub = (int) Math.round(1 * rows);
         final int columns_sub = (int) Math.round(1 * columns);

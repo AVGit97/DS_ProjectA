@@ -478,23 +478,10 @@ public class MasterNode implements Master {
 
     public double calculateError() {
 
-        double costfunction;
-        double minimizequantity=0;
-        double normalizequantity=0;
-        double XUnormsum=0;  //eis to tetragwno
-        double YInormsum=0;
-
+        double minimize_quantity = 0;
         for (int u = 0; u < XMatrix.getRowDimension(); u++) {
 
-            //System.out.println("row " + u + " of X matrix");
-
-            //XUnormsum += Math.pow(XMatrix.getRowMatrix(u).getNorm(), 2);
-            XUnormsum += XMatrix.getRowMatrix(u).getFrobeniusNorm();
-
             for (int i=0; i < YMatrix.getRowDimension(); i++) {
-
-                //YInormsum += Math.pow(YMatrix.getRowMatrix(i).getNorm(), 2);
-                YInormsum += YMatrix.getRowMatrix(i).getFrobeniusNorm();
 
                 double cui = C.getEntry(u, i);
                 double pui = P.getEntry(u, i);
@@ -502,20 +489,28 @@ public class MasterNode implements Master {
                 RealMatrix xuT = XMatrix.getRowMatrix(u);
                 RealMatrix yi = YMatrix.getRowMatrix(i).transpose();
 
-                minimizequantity = cui * Math.pow(pui - xuT.multiply(yi).getEntry(0, 0), 2);
+                minimize_quantity += cui * Math.pow(pui - xuT.multiply(yi).getEntry(0, 0), 2);
 
             }
 
         }
 
-        normalizequantity = lambda * (XUnormsum + YInormsum);
+        double XuNorm_sum = 0;
+        for (int u = 0; u < XMatrix.getRowDimension(); u++) {
+            XuNorm_sum += XMatrix.getRowMatrix(u).getFrobeniusNorm();
+        }
 
-        System.out.println("Cost function's first term is: " + minimizequantity +
-                "\nCost function's second term (normalization) is: " + normalizequantity);
+        double YiNorm_sum = 0;
+        for (int i=0; i < YMatrix.getRowDimension(); i++) {
+            YiNorm_sum += YMatrix.getRowMatrix(i).getFrobeniusNorm();
+        }
 
-        costfunction = minimizequantity + normalizequantity;
+        double normalize_quantity = lambda * (XuNorm_sum + YiNorm_sum);
 
-        return costfunction;
+        System.out.println("Cost function's first term is: " + minimize_quantity +
+                "\nCost function's second term (normalization) is: " + normalize_quantity);
+
+        return minimize_quantity + normalize_quantity;
 
     }
 

@@ -86,8 +86,9 @@ public class MasterNode implements Master {
 
         System.out.println("rows: " + rows + "\ncolumns: " + columns);
 
-        final int rows_sub = (int) Math.round(1 * rows);
-        final int columns_sub = (int) Math.round(1 * columns);
+//      Change 1 to the percentage of the matrix you want to use
+        final int rows_sub = Math.round(1 * rows);
+        final int columns_sub = Math.round(1 * columns);
 
         // Create R Matrix
         RealMatrix R = MatrixUtils.createRealMatrix(rows, columns);
@@ -95,7 +96,6 @@ public class MasterNode implements Master {
             R.setEntry(Integer.parseInt(elements.get(i)[0]), Integer.parseInt(elements.get(i)[1]), Double.parseDouble(elements.get(i)[2]));
         }
 
-//        UNCOMMENT BELOW TO TAKE A SUBMATRIX FOR TRAINING
         R = R.getSubMatrix(0, rows_sub - 1, 0, columns_sub - 1);
         System.out.println("R matrix created. (" + R.getRowDimension() + " x " + R.getColumnDimension() + ")");
 
@@ -103,7 +103,6 @@ public class MasterNode implements Master {
         P = MatrixUtils.createRealMatrix(rows, columns);
         calculatePMatrix(R);
 
-//        UNCOMMENT BELOW TO TAKE A SUBMATRIX FOR TRAINING
         P = P.getSubMatrix(0, rows_sub - 1, 0, columns_sub - 1);
         System.out.println("P matrix created. (" + P.getRowDimension() + " x " + P.getColumnDimension() + ")");
 
@@ -111,19 +110,11 @@ public class MasterNode implements Master {
         C = MatrixUtils.createRealMatrix(rows, columns);
         calculateCMatrix(40, R);
 
-//        UNCOMMENT BELOW TO TAKE A SUBMATRIX FOR TRAINING
         C = C.getSubMatrix(0, rows_sub - 1, 0, columns_sub - 1);
         System.out.println("C matrix created. (" + C.getRowDimension() + " x " + C.getColumnDimension() + ")");
 
         RandomGenerator rGen = new JDKRandomGenerator();
         rGen.setSeed(1);
-
-        // Create pois ArrayList
-        // latitude: 0-90
-        // longitude: 0-180
-        for (int i = 0; i < R.getColumnDimension(); i++) {
-            pois.add(new Poi(i, null, rGen.nextDouble() * 90, rGen.nextDouble() * 180, null));
-        }
 
         // define f
         int f = Math.max(R.getRowDimension(), R.getColumnDimension()) / 20;
@@ -148,6 +139,13 @@ public class MasterNode implements Master {
             for (int j = 0; j < f; j++) {
                 YMatrix.setEntry(i, j, rGen.nextDouble());
             }
+        }
+
+        // Create pois ArrayList
+        // latitude: 0-90
+        // longitude: 0-180
+        for (int i = 0; i < R.getColumnDimension(); i++) {
+            pois.add(new Poi(i, null, rGen.nextDouble() * 90, rGen.nextDouble() * 180, null));
         }
 
         try {
@@ -506,12 +504,12 @@ public class MasterNode implements Master {
 
         double XuNorm_sum = 0;
         for (int u = 0; u < XMatrix.getRowDimension(); u++) {
-            XuNorm_sum += XMatrix.getRowMatrix(u).getFrobeniusNorm();
+            XuNorm_sum += Math.pow(XMatrix.getRowMatrix(u).getFrobeniusNorm(), 2);
         }
 
         double YiNorm_sum = 0;
         for (int i=0; i < YMatrix.getRowDimension(); i++) {
-            YiNorm_sum += YMatrix.getRowMatrix(i).getFrobeniusNorm();
+            YiNorm_sum += Math.pow(YMatrix.getRowMatrix(i).getFrobeniusNorm(), 2);
         }
 
         double normalize_quantity = lambda * (XuNorm_sum + YiNorm_sum);

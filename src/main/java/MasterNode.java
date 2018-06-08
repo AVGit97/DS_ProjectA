@@ -56,8 +56,8 @@ public class MasterNode implements Master {
         // Import our matrix from file
         Scanner sc = null;
         try {
-//            sc = new Scanner(new File("input_matrix_no_zeros.csv"));
-            sc = new Scanner(new File("input_matrix_no_zeros_final.csv"));
+            sc = new Scanner(new File("input_matrix_no_zeros.csv"));
+//            sc = new Scanner(new File("input_matrix_no_zeros_final.csv"));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -87,8 +87,8 @@ public class MasterNode implements Master {
         System.out.println("rows: " + rows + "\ncolumns: " + columns);
 
 //      Change 1 to the percentage of the matrix you want to use
-        final int rows_sub = Math.round(1 * rows);
-        final int columns_sub = Math.round(1 * columns);
+        final int rows_sub = (int) Math.round(.1 * rows);
+        final int columns_sub = (int) Math.round(.1 * columns);
 
         // Create R Matrix
         RealMatrix R = MatrixUtils.createRealMatrix(rows, columns);

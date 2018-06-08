@@ -33,7 +33,7 @@ public class WorkerNode extends Thread implements Worker {
 
         try {
 
-            String hostIP = "192.168.1.5";
+            String hostIP = "192.168.1.2";
             System.out.println("Trying to connect to " + hostIP);
 
             requestSocket = new Socket(hostIP, 4321);

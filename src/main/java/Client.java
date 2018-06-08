@@ -26,7 +26,7 @@ public class Client extends Thread {
 
     public void initialize() {
 
-        String hostIP = "192.168.1.8";
+        String hostIP = "192.168.1.2";
         System.out.println("Trying to connect to " + hostIP);
 
         try {

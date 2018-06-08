@@ -2,6 +2,7 @@ import org.apache.commons.math3.linear.MatrixUtils;
 import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.random.JDKRandomGenerator;
 import org.apache.commons.math3.random.RandomGenerator;
+import test.ds_project.poi.Poi;
 
 import java.io.*;
 import java.net.InetAddress;

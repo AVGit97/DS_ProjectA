@@ -2,6 +2,8 @@ import org.apache.commons.math3.linear.MatrixUtils;
 import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.random.JDKRandomGenerator;
 import org.apache.commons.math3.random.RandomGenerator;
+import org.json.JSONException;
+import org.json.JSONObject;
 import test.ds_project.poi.Poi;
 
 import java.io.*;
@@ -57,8 +59,8 @@ public class MasterNode implements Master {
         // Import our matrix from file
         Scanner sc = null;
         try {
-            sc = new Scanner(new File("input_matrix_no_zeros.csv"));
-//            sc = new Scanner(new File("input_matrix_no_zeros_final.csv"));
+//            sc = new Scanner(new File("input_matrix_no_zeros.csv"));
+            sc = new Scanner(new File("input_matrix_no_zeros_final.csv"));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -93,12 +95,34 @@ public class MasterNode implements Master {
 
         // Create R Matrix
         RealMatrix R = MatrixUtils.createRealMatrix(rows, columns);
-        for (int i = 0; i < elements.size(); i++) {
-            R.setEntry(Integer.parseInt(elements.get(i)[0]), Integer.parseInt(elements.get(i)[1]), Double.parseDouble(elements.get(i)[2]));
+        for (String[] element : elements) {
+            R.setEntry(Integer.parseInt(element[0]), Integer.parseInt(element[1]), Double.parseDouble(element[2]));
         }
 
         R = R.getSubMatrix(0, rows_sub - 1, 0, columns_sub - 1);
         System.out.println("R matrix created. (" + R.getRowDimension() + " x " + R.getColumnDimension() + ")");
+
+        // Create pois ArrayList
+        String jsonData = readFile("POIs.json");
+        JSONObject allPois;
+        try {
+            allPois = new JSONObject(jsonData);
+            JSONObject currentPoi;
+            String name, category;
+            double latitude;
+            double longitude;
+//            for (int i = 0; i < R.getColumnDimension(); i++) {
+            for (int i = 0; i < 1692; i++) {
+                currentPoi = new JSONObject(allPois.getString(String.valueOf(i)));
+                name = currentPoi.getString("POI_name");
+                category = currentPoi.getString("POI_category_id");
+                latitude = currentPoi.getDouble("latitude");
+                longitude = currentPoi.getDouble("longitude");
+                pois.add(new Poi(i, name, latitude, longitude, category));
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
         // Calculate P Matrix
         P = MatrixUtils.createRealMatrix(rows, columns);
@@ -140,13 +164,6 @@ public class MasterNode implements Master {
             for (int j = 0; j < f; j++) {
                 YMatrix.setEntry(i, j, rGen.nextDouble());
             }
-        }
-
-        // Create pois ArrayList
-        // latitude: 0-90
-        // longitude: 0-180
-        for (int i = 0; i < R.getColumnDimension(); i++) {
-            pois.add(new Poi(i, null, rGen.nextDouble() * 90, rGen.nextDouble() * 180, null));
         }
 
         try {
@@ -587,6 +604,23 @@ public class MasterNode implements Master {
 
     private static double deg2rad(double deg) {
         return deg * (Math.PI/180);
+    }
+
+    private static String readFile(String filename) {
+        String result = "";
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(filename));
+            StringBuilder sb = new StringBuilder();
+            String line = br.readLine();
+            while (line != null) {
+                sb.append(line);
+                line = br.readLine();
+            }
+            result = sb.toString();
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        return result;
     }
 
 }
